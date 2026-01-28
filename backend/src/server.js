@@ -1,36 +1,43 @@
 const express = require("express");
-const {Client} = require("pg");
+const {Pool} = require("pg");  // ✅ Changed from Client to Pool
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 function getDbConfig() {
     return {
         host: process.env.DB_HOST,
-        port: Number(process.nextTick.DB_PORT || 5432),
+        port: Number(process.env.DB_PORT || 5432),  // ✅ Fixed: env not nextTick
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME
     };
 }
+
+//  NEW: Actually create the pool using your config
+const pool = new Pool(getDbConfig());
+
 app.get("/health", async (req, res) => {
-    // Check if the service is up with try function
-    try{
-        res.json ({
-            status:"ok",
-            service:"supportops-backend",
+    try {
+        // ✅ NEW: Actually check the database before saying "ok"
+        await pool.query("SELECT 1");
+        
+        res.json({
+            status: "ok",
+            service: "supportops-backend",
             version: process.env.APP_VERSION || "dev",
             timestamp: new Date().toISOString()
         });
-        // if it doesnt work it'll give 503, service running but dependency is down
+        
     } catch (error) {
         res.status(503).json({
-            status: "Error",
+            status: "error",  // lowercase for consistency
             service: "supportops-backend",
-            error: "Database connection failed"
+            message: "Database connection failed",
+            error: error.message  // Show what actually went wrong
         });
     }
 });
 
-app.listen(PORT,() => {
-    console.log(`[startup] supportops-backend listening on port ${PORT}`)
+app.listen(PORT, () => {
+    console.log(`[startup] supportops-backend listening on port ${PORT}`);
 });
