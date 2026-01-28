@@ -1,0 +1,14 @@
+# Node
+node_modules/
+npm-debug.log
+
+# Docker
+.env
+
+# IDE junk
+.vs/
+.vscode/
+
+# OS junk
+.DS_Store
+Thumbs.db

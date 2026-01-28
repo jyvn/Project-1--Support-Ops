@@ -23,6 +23,11 @@ services:
     environment:
       PORT: 3000
       APP_VERSION: "0.1.0"
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: supportops
+      DB_PASSWORD: supportops_pw
+      DB_NAME: supportops
     ports:
       - "3000:3000"
     depends_on:
