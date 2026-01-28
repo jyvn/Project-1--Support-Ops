@@ -21,6 +21,7 @@ app.get("/health", async (req, res) => {
             version: process.env.APP_VERSION || "dev",
             timestamp: new Date().toISOString()
         });
+        // if it doesnt work it'll give 503, service running but dependency is down
     } catch (error) {
         res.status(503).json({
             status: "Error",
