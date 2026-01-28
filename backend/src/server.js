@@ -16,7 +16,7 @@ app.get("/health", async (req, res) => {
     // Check if the service is up
     res.json ({
         status:"ok",
-        service:"supportops-backedn",
+        service:"supportops-backend",
         version: process.env.APP_VERSION || "dev",
         timestamp: new Date().toISOString()
     });
