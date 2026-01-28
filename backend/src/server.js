@@ -1,8 +1,17 @@
 const express = require("express");
-
+const {Client} = require("pg");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+function getDbConfig() {
+    return {
+        host: process.env.DB_HOST,
+        port: Number(process.nextTick.DB_PORT || 5432),
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME
+    };
+}
 app.get("/health", async (req, res) => {
     // Check if the service is up
     res.json ({
