@@ -13,13 +13,21 @@ function getDbConfig() {
     };
 }
 app.get("/health", async (req, res) => {
-    // Check if the service is up
-    res.json ({
-        status:"ok",
-        service:"supportops-backend",
-        version: process.env.APP_VERSION || "dev",
-        timestamp: new Date().toISOString()
-    });
+    // Check if the service is up with try function
+    try{
+        res.json ({
+            status:"ok",
+            service:"supportops-backend",
+            version: process.env.APP_VERSION || "dev",
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(503).json({
+            status: "Error",
+            service: "supportops-backend",
+            error: "Database connection failed"
+        });
+    }
 });
 
 app.listen(PORT,() => {
