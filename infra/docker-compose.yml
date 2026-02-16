@@ -23,6 +23,7 @@ services:
     environment:
       PORT: 3000
       APP_VERSION: "0.1.0"
+      LOG_LEVEL: "debug"
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: supportops
@@ -34,5 +35,4 @@ services:
       db:
         condition: service_healthy
 
-volumes:
-  supportops_db_data:
+
