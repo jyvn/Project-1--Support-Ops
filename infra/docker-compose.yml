@@ -35,4 +35,5 @@ services:
       db:
         condition: service_healthy
 
-
+volumes:
+  supportops_db_data:
