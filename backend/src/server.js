@@ -1,5 +1,6 @@
 const express = require("express");
-const {Pool} = require("pg");  
+const {Pool} = require("pg");
+const logger = require("./logger") 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -13,13 +14,25 @@ function getDbConfig() {
     };
 }
 
-//  NEW: Actually create the pool using your config
+//  create the pool using your config
 const pool = new Pool(getDbConfig());
 
 app.get("/health", async (req, res) => {
+    const startTime = Date.now();  // Track how long this takes
+    
     try {
-        // ✅ NEW: Actually check the database before saying "ok"
+        // Log that health check started
+        logger.debug('Health check started');
+        
         await pool.query("SELECT 1");
+        
+        const duration = Date.now() - startTime;
+        
+        // Log successful health check
+        logger.debug('Health check passed', {
+            duration_ms: duration,
+            status: 'ok'
+        });
         
         res.json({
             status: "ok",
@@ -29,15 +42,29 @@ app.get("/health", async (req, res) => {
         });
         
     } catch (error) {
+        const duration = Date.now() - startTime;
+        
+        // Log failed health check with ERROR level
+        logger.error('Health check failed', {
+            duration_ms: duration,
+            error: error.message,
+            code: error.code,
+            stack: error.stack
+        });
+        
         res.status(503).json({
-            status: "error",  // lowercase for consistency
+            status: "error",
             service: "supportops-backend",
             message: "Database connection failed",
-            error: error.message  // Show what actually went wrong
+            error: error.message
         });
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`[startup] supportops-backend listening on port ${PORT}`);
+    // Use logger instead of console.log
+    logger.info('Server started', {
+        port: PORT,
+        environment: process.env.NODE_ENV || 'development'
+    });
 });
